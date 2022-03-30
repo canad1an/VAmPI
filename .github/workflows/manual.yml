@@ -1,4 +1,4 @@
-name: active
+name: Build and Test Python API
 
 on: push
 
@@ -8,32 +8,31 @@ jobs:
 
     steps:
       - name: checkout
-        uses: actions/checkout@v2
-
+        uses: actions/checkout@v3
+        
       - name: docker login
         uses: docker/login-action@v1
         with:
-          registry: ${{ secrets.ACTIVE_DOCKER_REGISTRY }}
-          username: ${{ secrets.ACTIVE_DOCKER_REGISTRY_USERNAME }}
-          password: ${{ secrets.ACTIVE_DOCKER_REGISTRY_PASSWORD }}
+          registry: nonamesec.jfrog.io/noname-docker-release
+          username: devops@nonamesecurity.com
+          password: ${{ secrets.ACTIVE_REGISTRY_PASSWORD }}
 
-      - name: setup node
-        uses: actions/setup-node@v2
+      - uses: actions/setup-python@v3
         with:
-          node-version: "14"
-          cache: "npm"
-
-      - name: npm install
-        run: npm install
-
-      - name: start server
-        run: npm start &
+          python-version: '3.8' # Version range or exact version of a Python version to use, using SemVer's version range syntax
+          architecture: 'x64' # optional x64 or x86. Defaults to x64 if not specified
+          
+      - name: Install python dependencies
+        run: pip install -r requirements.txt
+        
+      - name: Startup API
+        run: python app.py &
 
       - name: security test
         run: |
           docker run --network host ${{ secrets.ACTIVE_DOCKER_REGISTRY }}/active-cli scan \
             --api-url=${{ secrets.ACTIVE_API_URL }} \
             --api-token=${{ secrets.ACTIVE_API_TOKEN }} \
-            --test-suite-id=7586a842-ea40-4825-b9e3-abe70fda3303 \
+            --test-suite-id=572dc5c9-54a5-477d-abb7-4a389387913e \
             --severity-threshold=${{ secrets.ACTIVE_SEVERITY_THRESHOLD }} \
-            --base-url http://localhost:3003/api/v1
+            --base-url http://localhost:5000
