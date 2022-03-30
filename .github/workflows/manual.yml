@@ -1,0 +1,39 @@
+name: active
+
+on: push
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+
+      - name: docker login
+        uses: docker/login-action@v1
+        with:
+          registry: ${{ secrets.ACTIVE_DOCKER_REGISTRY }}
+          username: ${{ secrets.ACTIVE_DOCKER_REGISTRY_USERNAME }}
+          password: ${{ secrets.ACTIVE_DOCKER_REGISTRY_PASSWORD }}
+
+      - name: setup node
+        uses: actions/setup-node@v2
+        with:
+          node-version: "14"
+          cache: "npm"
+
+      - name: npm install
+        run: npm install
+
+      - name: start server
+        run: npm start &
+
+      - name: security test
+        run: |
+          docker run --network host ${{ secrets.ACTIVE_DOCKER_REGISTRY }}/active-cli scan \
+            --api-url=${{ secrets.ACTIVE_API_URL }} \
+            --api-token=${{ secrets.ACTIVE_API_TOKEN }} \
+            --test-suite-id=7586a842-ea40-4825-b9e3-abe70fda3303 \
+            --severity-threshold=${{ secrets.ACTIVE_SEVERITY_THRESHOLD }} \
+            --base-url http://localhost:3003/api/v1
