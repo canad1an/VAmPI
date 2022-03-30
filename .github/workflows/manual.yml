@@ -30,9 +30,12 @@ jobs:
 
       - name: security test
         run: |
-          docker run --network host ${{ secrets.ACTIVE_DOCKER_REGISTRY }}/active-cli scan \
-            --api-url=${{ secrets.ACTIVE_API_URL }} \
-            --api-token=${{ secrets.ACTIVE_API_TOKEN }} \
-            --test-suite-id=572dc5c9-54a5-477d-abb7-4a389387913e \
-            --severity-threshold=${{ secrets.ACTIVE_SEVERITY_THRESHOLD }} \
-            --base-url http://localhost:8080
+          docker run \
+          --pull always \
+          nonamesec.jfrog.io/noname-docker-release/active-cli \
+          scan \
+          --api-url=${{ secrets.ACTIVE_API_URL }} \
+          --api-token=${{ secrets.ACTIVE_API_TOKEN }} \
+          --test-suite-id=572dc5c9-54a5-477d-abb7-4a389387913e \
+          --severity-threshold=medium \
+          --base-url=http://localhost:8080
