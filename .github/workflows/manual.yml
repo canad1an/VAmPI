@@ -32,10 +32,10 @@ jobs:
         run: |
           docker run \
           --pull always \
-          nonamesec.jfrog.io/noname-docker-release/active-cli \
+          nonamesec.jfrog.io/noname-docker-release/active-cli:0.8.7 \
           scan \
           --api-url=${{ secrets.ACTIVE_API_URL }} \
           --api-token=${{ secrets.ACTIVE_API_TOKEN }} \
           --test-suite-id=572dc5c9-54a5-477d-abb7-4a389387913e \
           --severity-threshold=medium \
-          --base-url=http://localhost:5000/
+          --base-url=http://localhost:5000
