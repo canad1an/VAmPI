@@ -39,3 +39,4 @@ jobs:
           --test-suite-id=572dc5c9-54a5-477d-abb7-4a389387913e \
           --severity-threshold=medium \
           --base-url=http://localhost:8080
+
